@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Category Listing Page</title>
+</head>
+<body>
+<h1>Category Listing Page</h1>
+    {% for category in  parent_categories %}
+        <div>
+            <a href="{{ category.id }}/products/"> {{ category.name }} </a> --- Product Amount {{ category.product_set.all|length}}
+        </div>
+        <br>
+    {% endfor %}
+</body>
+</html>
