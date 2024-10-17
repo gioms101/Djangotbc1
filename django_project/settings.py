@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'store',
     'order',
     "debug_toolbar",
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -127,3 +128,5 @@ INTERNAL_IPS = [
     "127.0.0.1",
     # ...
 ]
+
+AUTH_USER_MODEL = 'user.CustomUser'
