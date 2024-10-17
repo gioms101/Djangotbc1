@@ -15,9 +15,7 @@ This project extends Django's default `AbstractUser` model to include additional
    - A `UserCard` model is defined with a one-to-one relationship with the `CustomUser`.
    - A signal (`post_save`) is used to automatically create a `UserCard` when a new `CustomUser` is created.
 
-3. **Custom Admin for CustomUser**:
-   - The custom user model (`CustomUser`) is registered with the admin panel, allowing for horizontal filtering of `groups` and `user_permissions`.
-4. **Custom Admin for Products and Categories**:
+3. **Custom Admin for Products and Categories**:
    - Admin interfaces are defined for the `Product` and `Category` models with the following customizations:
      - `Product` Admin:
        - `list_display`: Displays `name`, `price`, `quantity`, and `image` in the admin list.
@@ -53,8 +51,7 @@ This project extends Django's default `AbstractUser` model to include additional
 ### Category Admin
 - Manages categories with `select_related` for optimizing database queries.
 
-### CustomUser Admin
-- Manages users with group and permission management.
+
 
 
 
