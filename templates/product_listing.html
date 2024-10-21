@@ -10,9 +10,7 @@
     <h1>Product Listing</h1>
     {% for product in  page_obj %}
         <div>
-
-            <a href="/products/{{ product.id }}/detailed/"> {{ product.name }} </a> ---- Total Price {{ product.total_price }} GEL
-
+            <a href="{% url 'store:detailed_page' product.id  %}"> {{ product.name }} </a> ---- Total Price {{ product.total_price }} GEL
         </div>
     {% endfor %}
     <br>

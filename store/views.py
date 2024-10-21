@@ -7,9 +7,6 @@ from django.db.models import Min, Max, Avg, Sum, F
 
 # Create your views here.
 
-def index(request):
-    return HttpResponse("Store App")
-
 
 def about(request):
     return HttpResponse("About Store App")
@@ -39,16 +36,6 @@ def product_list(request):
     return JsonResponse(returning_value, safe=False)
 
 
-def category(request):
-    parent_categories = Category.objects.filter(parent_id=None).prefetch_related('product_set')
-
-    context = {
-        "parent_categories": parent_categories
-    }
-
-    return render(request, 'category.html', context)
-
-
 def product_listing(request, category_id):
     products = Product.objects.filter(category__id=category_id).annotate(total_price=F('price') * F('quantity'))
     statistic_of_products = products.aggregate(most_expensive=Max('price'),
@@ -73,3 +60,50 @@ def products_detailed_page(request, product_id):
         "product": product,
     }
     return render(request, 'product_detailed_page.html', context)
+
+
+def main_page(request):
+    current_page = 'main_page'
+    products = Product.objects.prefetch_related('category')
+    return render(request, 'index.html', {'products': products, 'current_page': current_page})
+
+
+def category_page(request, slug=None):
+    current_page = 'category_page'
+    products = Product.objects.prefetch_related('category')
+
+    # 'categories' for category_fragment.html
+    categories = Category.objects.prefetch_related('product_set')
+
+    return render(request, 'shop.html', {'products': products, "categories": categories, 'current_page': current_page})
+
+
+def shop_detail(request, slug=None):
+    current_page = 'shop_detail'
+    if slug:
+        product = Product.objects.get(name=slug)
+    else:
+        product = Product.objects.first()
+
+    # 'categories' for category_fragment.html
+    categories = Category.objects.prefetch_related('product_set')
+
+    # 'products' for featured_products_fragment.html and scroll_products_fragment.html
+    products = Product.objects.prefetch_related('category')
+
+    return render(request, 'shop-detail.html', {'product': product, 'categories': categories,
+                                                'products': products, 'current_page': current_page
+                                                })
+
+
+def cart_page(request):
+    return render(request, 'cart.html')
+
+
+def checkout_page(request):
+    return render(request, 'chackout.html')
+
+
+def contact_page(request):
+    current_page = 'contact_page'
+    return render(request, 'contact.html', {'current_page': current_page})

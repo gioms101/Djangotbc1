@@ -1,57 +1,52 @@
-# # Django Project with Custom User, UserCard, and Admin Panel Customizations
+# E-commerce Django Application
 
-This project extends Django's default `AbstractUser` model to include additional fields and custom admin interfaces. It includes models for managing users and user-related information, as well as a custom admin interface for managing products and categories.
-
-
+This is a Django-based e-commerce application with basic functionality, including product listing, category filtering, cart management, and checkout.
 
 ## Features
 
-1. **Custom User Model**:
-   - The default Django user model is extended with additional fields such as:
-     - `phone`: A phone number field with a maximum length of 15 characters.
-     - `address`: An address field with a maximum length of 255 characters.
+- **Main Page**: Displays a list of all products, prefetching related categories for performance optimization.
+- **Category Page**: Displays products filtered by category, with a list of all categories preloaded.
+- **Shop Detail Page**: Displays detailed information about a specific product, with the option to load the product by a slug or the first product if no slug is provided.
+- **Cart Page**: Displays the user's shopping cart.
+- **Checkout Page**: Provides the checkout functionality.
+- **Contact Page**: A simple contact form.
 
-2. **UserCard Model**:
-   - A `UserCard` model is defined with a one-to-one relationship with the `CustomUser`.
-   - A signal (`post_save`) is used to automatically create a `UserCard` when a new `CustomUser` is created.
+## URL Patterns
 
-3. **Custom Admin for Products and Categories**:
-   - Admin interfaces are defined for the `Product` and `Category` models with the following customizations:
-     - `Product` Admin:
-       - `list_display`: Displays `name`, `price`, `quantity`, and `image` in the admin list.
-       - `list_filter`: Filters products based on `price` and `quantity`.
-       - `search_fields`: Allows searching by `name`.
-       - `list_editable`: Allows editing the `quantity` field directly from the list view.
-     - `Category` Admin:
-       - `list_display`: Displays `name` and `parent`.
-       - `list_filter`: Filters categories based on the `parent` category.
-       - `list_select_related`: Optimizes queries by using `select_related` for the `parent` field.
-       - `search_fields`: Allows searching by `name`.
+- `/` : Main page showing all products.
+- `/category/` : Category page showing all the product.
+- `/category/<slug:slug>` : Category page with products filtered by category.
+- `/product/` : Shop detail page with the first product.
+- `/product/<slug:slug>` : Shop detail page with the product specified by the slug.
+- `/order/cart` : Cart page displaying the user's cart.
+- `/order/checkout` : Checkout page for order completion.
+- `/contact/` : Contact page for reaching out to support.
 
 ## Models
 
-### `CustomUser`
-- Extends Django's `AbstractUser`.
-- Additional fields:
-  - `phone`: `CharField`, optional.
-  - `address`: `CharField`, optional.
+- **Product**: Represents a product in the store.
+- **Category**: Represents a product category.
+- **CartItem**: Represents an item in the user's cart. Linked to a `UserCard` model.
 
 ### `UserCard`
 - One-to-one relationship with the `CustomUser` model.
 
-## Signals
+# Templates
+The views render the following templates:
 
-- `create_user_card`: Automatically creates a `UserCard` instance when a new `CustomUser` is created.
+- index.html: The main page.
+- shop.html: The category page showing all the products.
+- shop-detail.html: The detail page for an individual product.
+- cart.html: Displays the user's shopping cart.
+- checkout.html: Provides the checkout interface.
+- contact.html: A contact form for user inquiries.
 
-## Admin Customizations
+# HTML Fragments
 
-### Product Admin
-- Manages products with enhanced filtering and editable fields.
-
-### Category Admin
-- Manages categories with `select_related` for optimizing database queries.
-
-
+- category_fragment.html: Displays a list of categories with the number of products in each category.
+- featured_products_fragment.html: Displays up to three featured products with their image, name, and price.
+- scroll_products_fragment.html: Displays products with a similar structure to products-fragment.html, optimized for a scrollable layout.
+- products-fragment.html: Displays all products with their image, name, price, and category.
 
 
 
