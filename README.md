@@ -1,50 +1,73 @@
 # E-commerce Django Application
 
-This is a Django-based e-commerce application with basic functionality, including product listing, category filtering, cart management, and checkout.
+This project is a simple e-commerce application built with Django. It allows users to browse products, filter them by categories and tags, and add them to their cart. The project also includes pagination and sorting features for products.
 
 ## Features
 
-- **Main Page**: Displays a list of all products, prefetching related categories for performance optimization.
-- **Category Page**: Displays products filtered by category, with a list of all categories preloaded.
-- **Shop Detail Page**: Displays detailed information about a specific product, with the option to load the product by a slug or the first product if no slug is provided.
-- **Cart Page**: Displays the user's shopping cart.
-- **Checkout Page**: Provides the checkout functionality.
-- **Contact Page**: A simple contact form.
+- **Main Page**: Displays a paginated list of products.
+- **Category Page**: Allows filtering products by categories, price, and tags.
+- **Search Functionality**: Enables searching for products by name.
+- **Sorting**: Products can be sorted by different fields.
+- **Cart**: Users can add products to their shopping cart.
+- **Contact Page**: Simple contact page.
+
 
 ## URL Patterns
 
 - `/` : Main page showing all products.
 - `/category/` : Category page showing all the product.
 - `/category/<slug:slug>` : Category page with products filtered by category.
-- `/product/` : Shop detail page with the first product.
-- `/product/<slug:slug>` : Shop detail page with the product specified by the slug.
-- `/order/cart` : Cart page displaying the user's cart.
-- `/order/checkout` : Checkout page for order completion.
-- `/contact/` : Contact page for reaching out to support.
+
 
 ## Models
 
 - **Product**: Represents a product in the store.
+- **ProductTag**: Represents tags that can be assigned to products.
 - **Category**: Represents a product category.
 - **CartItem**: Represents an item in the user's cart. Linked to a `UserCard` model.
 
 ### `UserCard`
 - One-to-one relationship with the `CustomUser` model.
 
+## Custom Template Tags
+Custom template tags are used to modify data in templates. In this project, we have a `cut` filter to replace parts of a string.
+
+## Context Processors
+Context processors make specific variables available in all templates without explicitly passing them in views. In this project, we have two context processors:
+
+- Product Count: Returns the count of products in the current user's cart.
+- Parent Categories: Retrieves all top-level categories.
+
+## Custom Model Manager
+We have a custom `ProductManager` that overrides Django's default `Manager` to include a method for prefetching related fields (category and tags) in product queries to optimize database queries.
+
+## Views
+
+### Main Page:
+Displays the main page with a paginated list of products. Products are fetched using a custom `join_related_tables` method in the `ProductManager`.
+
+### Category Page:
+Handles the category view, including filtering by categories, price range, tags, search functionality, and sorting.
+
+### Contact Page:
+A simple contact page view.
+
+## Pagination
+Pagination is implemented on both the main page and the category page to display products in batches.
+
+## Filtering & Sorting
+Products can be filtered by category, price range, and tags, and sorted based on user selection.
+
 # Templates
 The views render the following templates:
 
 - index.html: The main page.
 - shop.html: The category page showing all the products.
-- shop-detail.html: The detail page for an individual product.
-- cart.html: Displays the user's shopping cart.
-- checkout.html: Provides the checkout interface.
 - contact.html: A contact form for user inquiries.
 
 # HTML Fragments
 
 - category_fragment.html: Displays a list of categories with the number of products in each category.
-- featured_products_fragment.html: Displays up to three featured products with their image, name, and price.
 - scroll_products_fragment.html: Displays products with a similar structure to products-fragment.html, optimized for a scrollable layout.
 - products-fragment.html: Displays all products with their image, name, price, and category.
 

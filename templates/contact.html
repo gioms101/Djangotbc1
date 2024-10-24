@@ -1,20 +1,6 @@
 {% extends 'base.html' %}
 
-{% block active %}
-    <div class="navbar-nav mx-auto">
-        <a href="{%  url 'store:main_page' %}" class="nav-item nav-link">Home</a>
-        <a href="{%  url 'store:category' %}" class="nav-item nav-link">Shop</a>
-        <a href="{%  url 'store:shop_detail' %}" class="nav-item nav-link">Shop Detail</a>
-        <div class="nav-item dropdown">
-            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-            <div class="dropdown-menu m-0 bg-secondary rounded-0">
-                <a href="{%  url 'store:cart' %}" class="dropdown-item">Cart</a>
-                <a href="{%  url 'store:checkout_page' %}" class="dropdown-item">Checkout</a>
-            </div>
-        </div>
-        <a href="{%  url 'store:contact_page' %}" class="nav-item nav-link active">Contact</a>
-    </div>
-{% endblock %}
+
 
 
 {% block content %}

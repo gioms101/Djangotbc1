@@ -2,7 +2,7 @@
     {% for category in categories %}
     <li>
         <div class="d-flex justify-content-between fruite-name">
-            <a href="#"><i class="fas fa-apple-alt me-2"></i>{{ category.name }}</a>
+            <a href="{% url 'store:specific_category' category.name %}"><i class="fas fa-apple-alt me-2"></i>{{ category.name|title }}</a>
             <span>{{ category.product_set.all|length }}</span>
         </div>
     </li>
