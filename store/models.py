@@ -1,6 +1,6 @@
 from django.db import models
 from order.models import UserCard
-from .managers import ProductManager
+from .managers import ProductManager, CartItemManager
 
 
 # Create your models here.
@@ -42,3 +42,5 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f'Item of {self.cart}'
+
+    objects = CartItemManager()

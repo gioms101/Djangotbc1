@@ -1,4 +1,4 @@
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_delete
 from django.dispatch import receiver
 from django.http import Http404
 
@@ -13,3 +13,10 @@ def check_validity(sender, instance, **kwargs):
     else:
         product_obj.quantity -= 1
         product_obj.save()
+
+
+@receiver(post_delete, sender=CartItem)
+def delete_cart_item(sender, instance, **kwargs):
+    product_obj = Product.objects.get(id=instance.product_id)
+    product_obj.quantity += 1
+    product_obj.save()

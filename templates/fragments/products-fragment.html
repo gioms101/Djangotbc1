@@ -12,7 +12,7 @@
                     {% endfor %}
                 </div>
                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
-                    <h4>{{ product.name|cut:'-'|title }}</h4>
+                    <h4>{{ product.name|cut:'-'|title }}</h4>  {# 'cut' is custom filter tag, defined in templatetags/custom.tags.py #}
                     <form method="POST" action=".">
                         {% csrf_token %}
                         <div class="d-flex justify-content-between flex-lg-wrap">
@@ -29,14 +29,14 @@
 
 <div class="col-12">
     <div class="pagination d-flex justify-content-center mt-5">
-        {% if products.has_previous %}
+        {% if page_obj.has_previous %}
             <a href="?page=1" class='rounded'>&laquo; First</a>
-            <a href="?page={{ products.previous_page_number }}" class='rounded'>Previous</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class='rounded'>Previous</a>
         {% endif %}
 
-        {% if products.has_next %}
-            <a   href="?page={{ products.next_page_number }}" class='rounded'>Next</a>
-            <a href="?page={{ products.paginator.num_pages }}" class='rounded'>Last &raquo;</a>
+        {% if page_obj.has_next %}
+            <a   href="?page={{ page_obj.next_page_number }}" class='rounded'>Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class='rounded'>Last &raquo;</a>
         {% endif %}
     </div>
 </div>

@@ -5,17 +5,6 @@
         <div class="vesitable-img">
             <img src="{{ product.image.url }}" class="img-fluid w-100 rounded-top" alt="" />
         </div>
-        <div class="text-white bg-primary px-3 py-1 rounded position-absolute" style="top: 10px; right: 10px;">
-            {% with categories=product.category.all %}
-                {% for category in categories %}
-                    {% if categories|length > 1 %}
-                        {{ category.name|title }} /
-                    {% else %}
-                        {{ category.name|title }}
-                    {% endif %}
-                {% endfor %}
-            {% endwith %}
-        </div>
         <div class="p-4 rounded-bottom">
             <h4>{{ product.name|cut:'-' | title }}</h4>
             <form method="POST" action=".">

@@ -1,142 +1,88 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse, Http404
+from django.views.generic import TemplateView, ListView
 from .models import Category, Product, CartItem, ProductTag
-from django.core.paginator import Paginator
-from django.db.models import Min, Max, Avg, Sum, F
 
 
 # Create your views here.
 
-def main_page(request):
-    products = Product.objects.join_related_tables()
-
-    paginator = Paginator(products, 3)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    return render(request, 'index.html', {'products': page_obj})
+class MainPage(ListView):
+    model = Product
+    template_name = 'index.html'
+    context_object_name = 'products'
+    queryset = Product.objects.join_related_tables()  # join_related_tables()  is custom method in managers.py
+    paginate_by = 3
 
 
-def category_page(request, slug=None):
+class CategoryPage(ListView):
+    model = Product
+    template_name = 'shop.html'
+    context_object_name = 'products'
+    queryset = Product.objects.join_related_tables()
+    paginate_by = 6
 
-    if request.method == 'POST':
-        product = request.POST.get('product')
-        cart = request.POST.get('cart')
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        searched = self.request.GET.get('searched')
+        sorting_field = self.request.GET.get('sorting_products')
+        slug = self.kwargs.get('slug')
+        price = self.request.GET.get('rangeInput')
+        product_tag = self.request.GET.get('product_tag')
 
-        # invokes pre_save() signal to check product quantity.
-        CartItem.objects.create(cart_id=cart, product_id=product)
+        if slug:
+            queryset = queryset.filter(category__name=slug)
 
-    tags = ProductTag.objects.all()
+        if price and price != '0':
+            queryset = queryset.filter(price__lte=price)
 
-    if slug:
-        specific_category = Category.objects.filter(parent__name=slug)
-        specific_products = Product.objects.filter(category__name=slug)
-        return render(request, 'shop.html', {'products': specific_products, 'tags': tags, 'slug': slug,
-                                             "categories": specific_category})
-    # 'categories' for category_fragment.html
-    categories = Category.objects.filter(parent_id=None).prefetch_related('product_set')
+        if product_tag:
+            queryset = queryset.filter(tags__name=product_tag)
 
-    if 'rangeInput' in request.GET:
-        if 'product_tag' in request.GET:
-            tag = request.GET['product_tag']
-            num = request.GET['rangeInput']
+        elif searched:
+            queryset = queryset.filter(name__contains=searched)
+        elif sorting_field:
+            queryset = queryset.order_by(sorting_field)
 
-            filtered_products = Product.objects.filter(tags__name=tag).filter(price__lte=num) if num != '0' else (
-                Product.objects.filter(tags__name=tag))
+        return queryset
 
-            return render(request, 'shop.html', {'products': filtered_products, 'tags': tags,
-                                                 "categories": categories})
-        else:
-            num = request.GET['rangeInput']
-            filtered_product = Product.objects.filter(price__lte=num)
-            return render(request, 'shop.html', {'products': filtered_product, 'tags': tags,
-                                                 "categories": categories})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['slug'] = self.kwargs.get('slug') or ''
+        context['tags'] = ProductTag.objects.all()
+        context['categories'] = Category.objects.filter(parent__name=context['slug'])
+        return context
 
-    elif 'searched' in request.GET:
-        searched = request.GET['searched']
-        searched_product = Product.objects.filter(name__contains=searched)
-        return render(request, 'shop.html', {'products': searched_product, 'tags': tags,
-                                             "categories": categories})
+    def post(self, request, *args, **kwargs):  # invokes pre_save() signal to check product quantity in signals.py
+        # handle product add to cart in POST request
+        product_id = request.POST.get('product')
+        cart_id = request.POST.get('cart')
+        if product_id and cart_id:
+            CartItem.objects.create(cart_id=cart_id, product_id=product_id)
 
-    elif 'sorting_products' in request.GET:
-        sorting_field = request.GET['sorting_products']
-        sorted_products = Product.objects.order_by(sorting_field)
-
-        return render(request, 'shop.html', {'products': sorted_products, 'tags': tags,
-                                             "categories": categories})
-
-    else:
-        products = Product.objects.join_related_tables()
-
-        # for pagination
-        paginator = Paginator(products, 6)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
-
-        return render(request, 'shop.html', {'products': page_obj, 'tags': tags,
-                                             "categories": categories})
+        return self.get(request, *args, **kwargs)
 
 
-def contact_page(request):
-    return render(request, 'contact.html')
+class ContactView(TemplateView):
+    template_name = 'contact.html'
 
+
+"""If you click the Cart symbol on the navbar, CartPage view will display order items, where you 
+can delete some of the orders."""
+
+
+class CartPage(ListView):
+    model = CartItem
+    template_name = 'cart.html'
+    queryset = CartItem.objects.join_related_tables()
+    context_object_name = 'ordered_products'
+
+    def post(self, request, *args, **kwargs):
+        deleting_item_id = request.POST.get('deleting_item')
+        cart_item = CartItem.objects.get(id=deleting_item_id)
+        cart_item.delete()  # invokes post_delete signal to upgrade product quantity in signals.py
+
+        return self.get(request, *args, **kwargs)
 
 
 # momavalshi sheidzleba damchirdes amitom ar wavshli
-
-# def about(request):
-#     return HttpResponse("About Store App")
-#
-#
-# def categories(request):
-#     category_set = Category.objects.all()
-#     returning_value = []
-#     for category in category_set:
-#         returning_value.append({
-#             'name': category.name,
-#             "parend_id": category.parent_id,
-#             "parent_name": category.parent.name if category.parent_id else None
-#         })
-#     return JsonResponse(returning_value, safe=False)
-#
-#
-# def product_list(request):
-#     products = Product.objects.all()
-#     returning_value = []
-#     for product in products:
-#         returning_value.append({
-#             "name": product.name,
-#             "category_name": [category.name for category in product.category.all()],
-#             "image": product.image.url if product.image else None
-#         })
-#     return JsonResponse(returning_value, safe=False)
-#
-#
-# def product_listing(request, category_id):
-#     products = Product.objects.filter(category__id=category_id).annotate(total_price=F('price') * F('quantity'))
-#     statistic_of_products = products.aggregate(most_expensive=Max('price'),
-#                                                cheapest=Min('price'),
-#                                                avg=Avg('price'),
-#                                                total=Sum('total_price'))
-#
-#     paginator = Paginator(products, 1)
-#     page_number = request.GET.get('page')
-#     page_obj = paginator.get_page(page_number)
-#
-#     context = {
-#         'page_obj': page_obj,
-#         'statistic_of_products': statistic_of_products
-#     }
-#     return render(request, 'product_listing.html', context)
-#
-#
-# def products_detailed_page(request, product_id):
-#     product = Product.objects.get(id=product_id)
-#     context = {
-#         "product": product,
-#     }
-#     return render(request, 'product_detailed_page.html', context)
-
 # def shop_detail(request, slug=None):
 #     current_page = 'shop_detail'
 #     if slug:
@@ -153,11 +99,5 @@ def contact_page(request):
 #     return render(request, 'shop-detail.html', {'product': product, 'categories': categories,
 #                                                 'products': products, 'current_page': current_page
 #                                                 })
-
-
-# def cart_page(request):
-#     return render(request, 'cart.html')
-
-
 # def checkout_page(request):
 #     return render(request, 'chackout.html')

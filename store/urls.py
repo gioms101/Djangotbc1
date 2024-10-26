@@ -1,28 +1,17 @@
 from django.urls import path
-from . import views
+from .views import MainPage, ContactView, CategoryPage, CartPage
 
 
 app_name = 'store'
 
 urlpatterns = [
-    path('', views.main_page, name='main_page'),
-    path('category/', views.category_page, name='category'),
-    path('category/<slug:slug>', views.category_page, name='specific_category'),
-    path('contact/', views.contact_page, name='contact_page'),
-
+    path('', MainPage.as_view(), name='main_page'),
+    path('category/', CategoryPage.as_view(), name='category'),
+    path('category/<slug:slug>', CategoryPage.as_view(), name='specific_category'),
+    path('contact/', ContactView.as_view(), name='contact_page'),
+    path('order/cart', CartPage.as_view(), name='cart'),
 ]
 
-
-
-    # path('order/cart', views.cart_page, name='cart'),
-    # path('order/checkout', views.checkout_page, name='checkout_page'),
-    # path('product/', views.shop_detail, name='shop_detail'),
-    # path('product/<slug:slug>', views.shop_detail, name='shop_detail_product'),
-
-    # path('about/', views.about, name='about'),
-    # path('categories_list/', views.categories, name='categories_list'),
-    # path('product-list/', views.product_list, name='product-list'),
-    # path('category/<int:category_id>/products/', views.product_listing, name='product_listing'),
-    # path('products/<int:product_id>/detailed/', views.products_detailed_page, name='detailed_page'),
-
-
+# path('order/checkout', views.checkout_page, name='checkout_page'),
+# path('product/', views.shop_detail, name='shop_detail'),
+# path('product/<slug:slug>', views.shop_detail, name='shop_detail_product'),

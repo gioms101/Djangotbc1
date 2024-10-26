@@ -1,13 +1,13 @@
 # E-commerce Django Application
 
-This project is a simple e-commerce application built with Django. It allows users to browse products, filter them by categories and tags, and add them to their cart. The project also includes pagination and sorting features for products.
+This project is a simple e-commerce application built with Django. It allows users to browse products, filter them by categories and tags, and add them to their cart or delete an order. The project also includes pagination and sorting features for products.
 
 ## Features
 
 - **Main Page**: Displays a paginated list of products.
 - **Category Page**: Allows filtering products by categories, price, and tags.
 - **Search Functionality**: Enables searching for products by name.
-- **Sorting**: Products can be sorted by different fields.
+- **Sorting**: Products can be sorted by `Price` and `Quantity` field.
 - **Cart**: Users can add products to their shopping cart.
 - **Contact Page**: Simple contact page.
 
@@ -17,7 +17,7 @@ This project is a simple e-commerce application built with Django. It allows use
 - `/` : Main page showing all products.
 - `/category/` : Category page showing all the product.
 - `/category/<slug:slug>` : Category page with products filtered by category.
-
+- `/order/cart` : Showing selected items of cart.
 
 ## Models
 
@@ -64,7 +64,7 @@ The views render the following templates:
 - index.html: The main page.
 - shop.html: The category page showing all the products.
 - contact.html: A contact form for user inquiries.
-
+- cart.html: Added items to the cart.
 # HTML Fragments
 
 - category_fragment.html: Displays a list of categories with the number of products in each category.
