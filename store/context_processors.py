@@ -1,4 +1,5 @@
-from .models import CartItem, Category
+from .models import Category
+from order.models import CartItem
 
 
 def product_count(request):

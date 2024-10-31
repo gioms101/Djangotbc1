@@ -1,9 +1,12 @@
 # E-commerce Django Application
 
-This project is a simple e-commerce application built with Django. It allows users to browse products, filter them by categories and tags, and add them to their cart or delete an order. The project also includes pagination and sorting features for products.
+This project is a simple e-commerce application built with Django. It allows users to browse products, filter them by categories and tags, and add them to their cart or delete an order. The project also includes  user registration, login, logout, and tracking user activity.
 
 ## Features
-
+- **User Registration**:  Allows new users to register with the `RegisterUserForm`.
+- **User Login**: Allows users to log in with their credentials.
+- **User Logout**: Provides a logout functionality that redirects users to the login page.
+- **User Activity Tracking**: Updates the user's `last_active_datetime` field upon every request when authenticated.
 - **Main Page**: Displays a paginated list of products.
 - **Category Page**: Allows filtering products by categories, price, and tags.
 - **Search Functionality**: Enables searching for products by name.
@@ -18,6 +21,10 @@ This project is a simple e-commerce application built with Django. It allows use
 - `/category/` : Category page showing all the product.
 - `/category/<slug:slug>` : Category page with products filtered by category.
 - `/order/cart` : Showing selected items of cart.
+- `/register/` : To create a new user account.
+- `/login/` :  To log into the app.
+- `Logout` : Log out with `/logout/`.
+
 
 ## Models
 
@@ -49,27 +56,15 @@ Displays the main page with a paginated list of products. Products are fetched u
 ### Category Page:
 Handles the category view, including filtering by categories, price range, tags, search functionality, and sorting.
 
+### RegisterPage
+A `CreateView` that allows new users to register. Automatically logs in the user after a successful registration.
+
 ### Contact Page:
 A simple contact page view.
 
-## Pagination
-Pagination is implemented on both the main page and the category page to display products in batches.
+## Middleware
 
-## Filtering & Sorting
-Products can be filtered by category, price range, and tags, and sorted based on user selection.
-
-# Templates
-The views render the following templates:
-
-- index.html: The main page.
-- shop.html: The category page showing all the products.
-- contact.html: A contact form for user inquiries.
-- cart.html: Added items to the cart.
-# HTML Fragments
-
-- category_fragment.html: Displays a list of categories with the number of products in each category.
-- scroll_products_fragment.html: Displays products with a similar structure to products-fragment.html, optimized for a scrollable layout.
-- products-fragment.html: Displays all products with their image, name, price, and category.
-
-
-
+### UserActiveMiddleware:
+ 
+- Tracks authenticated users' last active time by updating the `last_active_datetime` field
+- Sets session expiry to 60 seconds after user activity.

@@ -1,6 +1,5 @@
 from django.db import models
-from order.models import UserCard
-from .managers import ProductManager, CartItemManager
+from .managers import ProductManager
 
 
 # Create your models here.
@@ -36,11 +35,4 @@ class Product(models.Model):
     objects = ProductManager()
 
 
-class CartItem(models.Model):
-    cart = models.ForeignKey(UserCard, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return f'Item of {self.cart}'
-
-    objects = CartItemManager()

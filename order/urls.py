@@ -1,7 +1,8 @@
 from django.urls import path
-from . import views
+from .views import CartPage
+
+app_name = 'order'
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('about/', views.about, name='about'),
+    path('cart/', CartPage.as_view(), name='cart'),
 ]

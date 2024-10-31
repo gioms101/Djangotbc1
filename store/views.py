@@ -1,5 +1,10 @@
-from django.views.generic import TemplateView, ListView
-from .models import Category, Product, CartItem, ProductTag
+from django.views.generic import TemplateView, ListView, CreateView
+from django.contrib.auth import authenticate, login
+from django.urls import reverse_lazy
+from .models import Category, Product, ProductTag
+from order.models import CartItem
+from user.models import CustomUser
+from user.forms import RegisterUserForm
 
 
 # Create your views here.
@@ -60,27 +65,27 @@ class CategoryPage(ListView):
         return self.get(request, *args, **kwargs)
 
 
+class RegisterPage(CreateView):
+    model = CustomUser
+    form_class = RegisterUserForm
+    template_name = 'register.html'
+    success_url = reverse_lazy('store:category')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        username = form.cleaned_data.get('username')
+        password = form.cleaned_data.get('password1')
+        user = authenticate(username=username, password=password)
+
+        if user:
+            login(self.request, user)
+
+        return response
+
+
 class ContactView(TemplateView):
     template_name = 'contact.html'
-
-
-"""If you click the Cart symbol on the navbar, CartPage view will display order items, where you 
-can delete some of the orders."""
-
-
-class CartPage(ListView):
-    model = CartItem
-    template_name = 'cart.html'
-    queryset = CartItem.objects.join_related_tables()
-    context_object_name = 'ordered_products'
-
-    def post(self, request, *args, **kwargs):
-        deleting_item_id = request.POST.get('deleting_item')
-        cart_item = CartItem.objects.get(id=deleting_item_id)
-        cart_item.delete()  # invokes post_delete signal to upgrade product quantity in signals.py
-
-        return self.get(request, *args, **kwargs)
-
 
 # momavalshi sheidzleba damchirdes amitom ar wavshli
 # def shop_detail(request, slug=None):

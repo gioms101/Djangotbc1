@@ -29,6 +29,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {% if user.is_authenticated %}
                         {% for cart_item in ordered_products %}
                         <tr>
                             <th scope="row">
@@ -58,7 +59,7 @@
                                 </div>
                             </td>
                             <td>
-                                <form method="post" action="{% url 'store:cart' %}">
+                                <form method="post" action="{% url 'order:cart' %}">
                                     {% csrf_token %}
                                     <input type="hidden" name="deleting_item" value="{{ cart_item.id }}">
                                     <button class="btn btn-md rounded-circle bg-light border mt-4">
@@ -68,6 +69,7 @@
                             </td>
                         </tr>
                         {% endfor %}
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
