@@ -22,9 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-7xac&j9qo9i14_i&6^vf1@5zxw4t#qqf=j131b+isf*pdq#4me'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # Application definition
 
@@ -50,7 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'user.middleware.UserActiveMiddleware',
+    # 'user.middleware.UserActiveMiddleware',
 ]
 
 ROOT_URLCONF = 'django_project.urls'
@@ -142,3 +142,5 @@ AUTH_USER_MODEL = 'user.CustomUser'
 
 LOGIN_URL = 'store:login'
 LOGIN_REDIRECT_URL = 'store:category'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

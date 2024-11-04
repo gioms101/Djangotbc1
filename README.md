@@ -1,6 +1,6 @@
 # E-commerce Django Application
 
-This project is a simple e-commerce application built with Django. It allows users to browse products, filter them by categories and tags, and add them to their cart or delete an order. The project also includes  user registration, login, logout, and tracking user activity.
+This project is a simple e-commerce application built with Django. It allows users to browse products, filter them by categories and tags, and add them to their cart or delete an order. It includes custom error handling, page caching, and a dynamic navbar that adjusts based on user authentication. The project also includes  user registration, login, logout, and tracking user activity.
 
 ## Features
 - **User Registration**:  Allows new users to register with the `RegisterUserForm`.
@@ -13,6 +13,7 @@ This project is a simple e-commerce application built with Django. It allows use
 - **Sorting**: Products can be sorted by `Price` and `Quantity` field.
 - **Cart**: Users can add products to their shopping cart.
 - **Contact Page**: Simple contact page.
+- **Custom Error Pages**:  404 and 500 error pages are set up for improved user experience.
 
 
 ## URL Patterns
@@ -61,6 +62,15 @@ A `CreateView` that allows new users to register. Automatically logs in the user
 
 ### Contact Page:
 A simple contact page view.
+
+
+## base.html Template
+
+### The navbar in `base.html` is cached for 60 seconds per user and includes:
+
+- Links to main sections such as "Home," "Shop," "Contact," and category dropdowns.
+- Cart icon displaying the number of items.
+- User icon with login/logout functionality based on authentication status.
 
 ## Middleware
 

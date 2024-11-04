@@ -1,6 +1,11 @@
-from django.views.generic import TemplateView, ListView, CreateView
-from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+from django.views.decorators.vary import vary_on_cookie
+from django.views.generic import TemplateView, ListView, CreateView, View
+from django.contrib.auth import authenticate, login, logout
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.urls import reverse_lazy
+from django.core.mail import send_mail
 from .models import Category, Product, ProductTag
 from order.models import CartItem
 from user.models import CustomUser
@@ -17,6 +22,7 @@ class MainPage(ListView):
     paginate_by = 3
 
 
+@method_decorator([vary_on_cookie, cache_page(60)], name='dispatch')
 class CategoryPage(ListView):
     model = Product
     template_name = 'shop.html'
@@ -60,7 +66,13 @@ class CategoryPage(ListView):
         product_id = request.POST.get('product')
         cart_id = request.POST.get('cart')
         if product_id and cart_id:
-            CartItem.objects.create(cart_id=cart_id, product_id=product_id)
+            cart_item_obj = CartItem.objects.filter(cart_id=cart_id, product_id=product_id)
+            if cart_item_obj.exists():
+                cart_item_obj = cart_item_obj.first()
+                cart_item_obj.quantity += 1
+                cart_item_obj.save(update_fields=['quantity'])
+            else:
+                CartItem.objects.create(cart_id=cart_id, product_id=product_id)
 
         return self.get(request, *args, **kwargs)
 
@@ -87,7 +99,37 @@ class RegisterPage(CreateView):
 class ContactView(TemplateView):
     template_name = 'contact.html'
 
-# momavalshi sheidzleba damchirdes amitom ar wavshli
+    def post(self, request):
+        if self.request.user.is_authenticated:
+            subject = self.request.POST.get('subject')
+            message = self.request.POST.get('message')
+            if subject and message:
+                send_mail(
+                    subject,
+                    message,
+                    self.request.user.email,
+                    [CustomUser.objects.get(username='admin').email],
+                    fail_silently=False,
+                )
+                return render(request, 'contact.html', {'sent_message': True})
+        else:
+            return redirect('/login/?next=/contact/')
+
+
+def handle_404(request, exception):
+    return render(request, 'error_handling/404.html')
+
+
+def handle_500(request):
+    return render(request, 'error_handling/500.html')
+
+
+class LogoutUser(View):
+    def get(self, request):
+        logout(self.request)
+        return redirect(reverse_lazy('store:login'))
+
+
 # def shop_detail(request, slug=None):
 #     current_page = 'shop_detail'
 #     if slug:

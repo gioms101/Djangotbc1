@@ -8,11 +8,13 @@ from .managers import CartItemManager
 
 class UserCard(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class CartItem(models.Model):
     cart = models.ForeignKey(UserCard, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
         return f'Item of {self.cart}'

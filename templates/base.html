@@ -1,4 +1,5 @@
 {% load static %}
+{% load cache %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,6 +38,7 @@
         </div>
     <!-- Spinner End -->
 
+{% cache 60  navbar user.id %}
 <!-- Navbar start -->
 <div class="container-fluid fixed-top">
     <div class="container topbar bg-primary d-none d-lg-block">
@@ -61,7 +63,7 @@
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Categories</a>
                         <div class="dropdown-menu m-0 bg-secondary rounded-0">
-                            {% for category in parent_categories %} {# 'parent_categories' is manually added to context_processors #}
+                            {% for category in parent_categories %} {# 'parent_categories' is added to context_processors #}
                                 <a href="{%  url 'store:specific_category' category.name %}" class="dropdown-item">{{ category.name|title }}</a>
                             {% endfor %}
                         </div>
@@ -73,7 +75,7 @@
                     <a href="{% url 'order:cart' %}" class="position-relative me-4 my-auto">
                         <i class="fa fa-shopping-bag fa-2x"></i>
                         <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px;">
-                            {{ product_count }} {#'product_count' is manually added to context_processors #}
+                            {{ product_count|default:'0' }} {#'product_count' is added to context_processors #}
                         </span>
                     </a>
                     <a href="{% if not user.is_authenticated %}
@@ -82,10 +84,7 @@
                         <i class="fas fa-user fa-2x"></i>
                     </a>
                     {% if user.is_authenticated %}
-                        <form method="post" action="{% url 'store:logout' %}">
-                            {% csrf_token %}
-                            <button style="padding-left: 35px; padding-top:10px; border-width: 0; background-color: white">Log Out</button>
-                        </form>
+                        <a href="{% url 'store:logout' %}" style="padding-left: 15px; padding-top:10px; border-width: 0; background-color: white">Log Out</a>
                     {% endif %}
                 </div>
             </div>
@@ -93,7 +92,7 @@
     </div>
 </div>
 <!-- Navbar End -->
-
+{% endcache %}
     <!-- Modal Search Start -->
         <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-fullscreen">
